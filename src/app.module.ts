@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ConfigService } from '@nestjs/config/dist';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { TodoModule } from './app/todo/todo.module';
 
 @Module({
   imports: [
@@ -15,10 +16,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         username: configService.get('DB_USER', 'root'),
         password: configService.get('DB_PASSWORD', '330133Diogo'),
         database: configService.get('DB_DATABASE', 'todo'),
-        entities: [],
+        entities: [__dirname + '/**/*.entity{.js,.ts}'],
         synchronize: true,
       }),
     }),
+    TodoModule,
   ],
   controllers: [],
   providers: [],
