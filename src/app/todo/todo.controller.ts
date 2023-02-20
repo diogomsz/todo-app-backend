@@ -10,11 +10,13 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { TodoService } from './todo.service';
 
 @Controller('api/v1/todos')
+@ApiTags('todos')
 export class TodoController {
   constructor(private readonly todoService: TodoService) {}
 
