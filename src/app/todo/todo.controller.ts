@@ -11,6 +11,8 @@ import {
   Put,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { BadRequestSwagger } from 'src/helpers/swagger/bad-request.swagger';
+import { NotFoundSwagger } from 'src/helpers/swagger/not-found.swagger';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { CreateTodoSwagger } from './swagger/create-todo.swagger';
@@ -43,7 +45,11 @@ export class TodoController {
     description: 'Nova tarefa criada com sucesso',
     type: CreateTodoSwagger,
   })
-  @ApiResponse({ status: 400, description: 'Parâmetros inválidos' })
+  @ApiResponse({
+    status: 400,
+    description: 'Parâmetros inválidos',
+    type: BadRequestSwagger,
+  })
   async create(@Body() body: CreateTodoDto) {
     return await this.todoService.create(body);
   }
@@ -55,7 +61,11 @@ export class TodoController {
     description: 'Dados de uma tarefa retornado com sucesso',
     type: ShowTodoSwagger,
   })
-  @ApiResponse({ status: 404, description: 'Tarefa não foi encontrada' })
+  @ApiResponse({
+    status: 404,
+    description: 'Tarefa não foi encontrada',
+    type: NotFoundSwagger,
+  })
   async show(@Param('id', new ParseUUIDPipe()) id: string) {
     return await this.todoService.findOneOrFail(id);
   }
@@ -67,7 +77,16 @@ export class TodoController {
     description: 'Tarefa atualizada com sucesso',
     type: UpdateTodoSwagger,
   })
-  @ApiResponse({ status: 404, description: 'Tarefa não foi encontrada' })
+  @ApiResponse({
+    status: 400,
+    description: 'Dados inválidos',
+    type: BadRequestSwagger,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Tarefa não foi encontrada',
+    type: NotFoundSwagger,
+  })
   async update(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() body: UpdateTodoDto,
@@ -79,7 +98,11 @@ export class TodoController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Deletar os dados de uma tarefa' })
   @ApiResponse({ status: 204, description: 'Tarefa removida com sucesso' })
-  @ApiResponse({ status: 404, description: 'Tarefa não foi encontrada' })
+  @ApiResponse({
+    status: 404,
+    description: 'Tarefa não foi encontrada',
+    type: NotFoundSwagger,
+  })
   async destroy(id: string) {
     return await this.todoService.deleteById(id);
   }
