@@ -163,12 +163,12 @@ describe('TodoController', () => {
       // Assert
       expect(result).toBeUndefined();
       expect(todoService.deleteById).toHaveBeenCalledTimes(1);
-      expect(todoService.deleteById).toHaveBeenCalledWith('');
+      expect(todoService.deleteById).toHaveBeenCalledWith('1');
     });
 
     it('should throw an exception', () => {
       // Arrange
-      jest.spyOn(todoService, 'update').mockRejectedValueOnce(new Error());
+      jest.spyOn(todoService, 'deleteById').mockRejectedValueOnce(new Error());
 
       // Assert
       expect(todoController.destroy('1')).rejects.toThrowError();
