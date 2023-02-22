@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CreateTodoDto } from './dto/create-todo.dto';
+import { UpdateTodoDto } from './dto/update-todo.dto';
 import { TodoEntity } from './entity/todo.entity';
 import { TodoController } from './todo.controller';
 import { TodoService } from './todo.service';
@@ -13,6 +14,11 @@ const todoEntityList: TodoEntity[] = [
 const newTodoEntity = new TodoEntity({
   task: 'new task',
   isDone: 0,
+});
+
+const updatedTodoEntity = new TodoEntity({
+  task: 'task 1',
+  isDone: 1,
 });
 
 describe('TodoController', () => {
@@ -29,8 +35,8 @@ describe('TodoController', () => {
             findAll: jest.fn().mockResolvedValue(todoEntityList),
             create: jest.fn().mockResolvedValue(newTodoEntity),
             findOneOrFail: jest.fn().mockResolvedValue(todoEntityList[0]),
-            update: jest.fn(),
-            deleteById: jest.fn(),
+            update: jest.fn().mockResolvedValue(updatedTodoEntity),
+            deleteById: jest.fn().mockResolvedValue(undefined),
           },
         },
       ],
@@ -117,5 +123,55 @@ describe('TodoController', () => {
     });
   });
 
-  desci;
+  describe('update', () => {
+    it('should update a todo item successfully', async () => {
+      // Arrange
+      const body: UpdateTodoDto = {
+        task: 'task 1',
+        isDone: 1,
+      };
+
+      // Act
+      const result = await todoController.update('1', body);
+
+      // Assert
+      expect(result).toEqual(updatedTodoEntity);
+      expect(todoService.update).toHaveBeenCalledTimes(1);
+      expect(todoService.update).toHaveBeenCalledWith('1', body);
+    });
+
+    it('should throw an exception', () => {
+      // Arrange
+      const body: UpdateTodoDto = {
+        task: 'task 1',
+        isDone: 1,
+      };
+
+      // Act
+      jest.spyOn(todoService, 'update').mockRejectedValueOnce(new Error());
+
+      // Assert
+      expect(todoController.update('1', body)).rejects.toThrowError();
+    });
+  });
+
+  describe('destroy', () => {
+    it('should remove a todo item successfully', async () => {
+      // Act
+      const result = await todoController.destroy('1');
+
+      // Assert
+      expect(result).toBeUndefined();
+      expect(todoService.deleteById).toHaveBeenCalledTimes(1);
+      expect(todoService.deleteById).toHaveBeenCalledWith('');
+    });
+
+    it('should throw an exception', () => {
+      // Arrange
+      jest.spyOn(todoService, 'update').mockRejectedValueOnce(new Error());
+
+      // Assert
+      expect(todoController.destroy('1')).rejects.toThrowError();
+    });
+  });
 });
